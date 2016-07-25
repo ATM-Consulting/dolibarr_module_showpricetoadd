@@ -101,6 +101,7 @@ class Actionsshowpricetoadd
 	{
 		global $langs;
 		
+		
 		$html = '<script type="text/javascript">
 						var spta_ajax_in_progress = 0;
 					
@@ -114,11 +115,11 @@ class Actionsshowpricetoadd
 							var td = $("#idprod").closest("td");
 							var td_titre = td.closest("tr").prev("tr.liste_titre").children("td:first");
 							
-							td.attr("colspan", td.attr("colspan") - 1);
-							td_titre.attr("colspan", td_titre.attr("colspan") - 1);
+							if (typeof td.attr("colspan") != "undefined") td.attr("colspan", td.attr("colspan") - 1);
+							if (typeof td_titre.attr("colspan") != "undefined") td_titre.attr("colspan", td_titre.attr("colspan") - 1);
 							
-							td.after($("<td align=\'right\' id=\'td_showpricetoadd\'><input name=\'showpricetoadd\' id=\'showpricetoadd\' size=\'5\' /></td>"))
-							td_titre.after($("<td align=\'right\' id=\'td_titre_showpricetoadd\'>'.$langs->transnoentities('PriceUHT').'</td>"));
+							td.after($("<td align=\'right\' id=\'td_showpricetoadd\' class=\'el_showpricetoadd\'><input name=\'showpricetoadd\' id=\'showpricetoadd\' size=\'5\' /></td>"))
+							td_titre.after($("<td align=\'right\' id=\'td_titre_showpricetoadd\' class=\'el_showpricetoadd\'>'.$langs->transnoentities('PriceUHT').'</td>"));
 							
 							spta_bindEvent();
 						}
@@ -131,30 +132,47 @@ class Actionsshowpricetoadd
 						
 						function spta_setPriceInInput(input) {
 							
-							console.log("ENTREE", spta_ajax_in_progress);
-							
 							if (spta_ajax_in_progress == 0)
 							{
 								spta_ajax_in_progress++;
 								var fk_product = $(input).val();
 							
 								$.get("'.dol_buildpath('/showpricetoadd/script/interface.php', 1).'", {json:1, get:"priceProduct", fk_product:fk_product}, function(price) {
-										
+									
 									$("#showpricetoadd").val(price);
-									
-									console.log(price);
-									
 									spta_ajax_in_progress--;
-									console.log("SORTIE", spta_ajax_in_progress);
 									
 								}, "json");
 								
 							}
 							
 						}
-						
-					</script>
 				';
+				
+			if ((float) DOL_VERSION >= 3.6)
+			{
+				$html .= '
+					$(function() {
+						 $(".el_showpricetoadd").hide(); 
+					});
+					
+					$("#prod_entry_mode_free").click(function(event) {
+						$(".el_showpricetoadd").hide();
+					});
+					$("#select_type").change(function(event) {
+						$(".el_showpricetoadd").hide();
+					});
+					
+					$("#prod_entry_mode_predef").change(function(event) {
+						$(".el_showpricetoadd").show();
+					});
+					$("#idprod").change(function(event) {
+						$(".el_showpricetoadd").show();
+					});
+				';
+			}
+				
+			$html .= '</script>';
 				
 			return $html;
 	}

@@ -120,36 +120,45 @@ class Interfaceshowpricetoaddtrigger
         if ($action == 'LINEPROPAL_INSERT') {
             dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 			
-			$showpricetoadd = price2num(GETPOST('showpricetoadd'));
-			
-			$propal = new Propal($this->db);
-			if ($propal->fetch($object->fk_propal) > 0)
+			if (GETPOST('addline_predefined') || GETPOST('prod_entry_mode') == 'predef')
 			{
-				$propal->updateline($object->id, $showpricetoadd, $object->qty, $object->remise_percent, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, $object->desc, 'HT', $object->info_bits, $object->special_code, $object->fk_parent_line, 0, 0, $object->pa_ht, $object->label, $object->product_type, $object->date_start, $object->date_end, $object->array_options);
+				$showpricetoadd = price2num(GETPOST('showpricetoadd'));
+				
+				$propal = new Propal($this->db);
+				if ($propal->fetch($object->fk_propal) > 0)
+				{
+					$propal->updateline($object->id, $showpricetoadd, $object->qty, $object->remise_percent, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, $object->desc, 'HT', $object->info_bits, $object->special_code, $object->fk_parent_line, 0, 0, $object->pa_ht, $object->label, $object->product_type, $object->date_start, $object->date_end, $object->array_options, $object->fk_unit);
+				}	
 			}
         }
 		
 		if ($action == 'LINEORDER_INSERT') {
             dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
-			
-			$showpricetoadd = price2num(GETPOST('showpricetoadd'));
-			
-			$commande = new Commande($this->db);
-			if ($commande->fetch($object->fk_commande) > 0) 
+			 
+			if (GETPOST('addline_predefined') || GETPOST('prod_entry_mode') == 'predef')
 			{
-				$commande->updateline($object->id, $object->desc, $showpricetoadd, $object->qty, $object->remise_percent, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', $object->info_bits, $object->date_start, $object->date_end, $object->product_type, $object->fk_parent_line, 0, 0, $object->pa_ht, $object->label, $object->special_code, $object->array_options);
+				$showpricetoadd = price2num(GETPOST('showpricetoadd'));
+				
+				$commande = new Commande($this->db);
+				if ($commande->fetch($object->fk_commande) > 0) 
+				{
+					$commande->updateline($object->id, $object->desc, $showpricetoadd, $object->qty, $object->remise_percent, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', $object->info_bits, $object->date_start, $object->date_end, $object->product_type, $object->fk_parent_line, 0, 0, $object->pa_ht, $object->label, $object->special_code, $object->array_options, $object->fk_unit);
+				}
 			}
         }
         
 		if ($action == 'LINEBILL_INSERT') {
             dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 			
-			$showpricetoadd = price2num(GETPOST('showpricetoadd'));
-			
-			$facture = new Facture($this->db);
-			if ($facture->fetch($object->fk_facture) > 0) 
+			if (GETPOST('addline_predefined') || GETPOST('prod_entry_mode') == 'predef')
 			{
-				$facture->updateline($object->id, $object->desc, $showpricetoadd, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', $object->info_bits, $object->product_type, $object->fk_parent_line, 0, 0, $object->pa_ht, $object->label, $object->special_code, $object->array_options);
+				$showpricetoadd = price2num(GETPOST('showpricetoadd'));
+				
+				$facture = new Facture($this->db);
+				if ($facture->fetch($object->fk_facture) > 0) 
+				{
+					$facture->updateline($object->id, $object->desc, $showpricetoadd, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', $object->info_bits, $object->product_type, $object->fk_parent_line, 0, 0, $object->pa_ht, $object->label, $object->special_code, $object->array_options, $object->situation_percent, $object->fk_unit);
+				}
 			}
         }
 		
