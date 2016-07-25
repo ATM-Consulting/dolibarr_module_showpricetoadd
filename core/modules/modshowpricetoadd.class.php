@@ -87,7 +87,10 @@ class modshowpricetoadd extends DolibarrModules
 		//							'dir' => array('output' => 'othermodulename'),      // To force the default directories names
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@showpricetoadd')) // Set here all workflow context managed by module
 		//                        );
-		$this->module_parts = array();
+		$this->module_parts = array(
+			'triggers' => 1
+			,'hooks' => array('propalcard', 'ordercard', 'invoicecard')
+		);
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/showpricetoadd/temp");
@@ -102,7 +105,7 @@ class modshowpricetoadd extends DolibarrModules
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->conflictwith = array();	// List of modules id this module is in conflict with
 		$this->phpmin = array(5,0);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(3,0);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(3,5);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array("showpricetoadd@showpricetoadd");
 
 		// Constants
@@ -110,7 +113,11 @@ class modshowpricetoadd extends DolibarrModules
 		// Example: $this->const=array(0=>array('MYMODULE_MYNEWCONST1','chaine','myvalue','This is a constant to add',1),
 		//                             1=>array('MYMODULE_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
 		// );
-		$this->const = array();
+		$this->const = array(
+			0=>array('SHOWPRICETOADD_PROPAL','chaine','1','',1)
+			,1=>array('SHOWPRICETOADD_ORDER','chaine','1','',1)
+			,2=>array('SHOWPRICETOADD_INVOICE','chaine','1','',1)
+		);
 
 		// Array to add new pages in new tabs
 		// Example: $this->tabs = array('objecttype:+tabname1:Title1:mylangfile@showpricetoadd:$user->rights->showpricetoadd->read:/showpricetoadd/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1

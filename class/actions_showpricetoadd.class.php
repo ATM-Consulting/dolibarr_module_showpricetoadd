@@ -61,28 +61,101 @@ class Actionsshowpricetoadd
 	 */
 	function doActions($parameters, &$object, &$action, $hookmanager)
 	{
-		$error = 0; // Error counter
-		$myvalue = 'test'; // A result value
-
-		print_r($parameters);
-		echo "action: " . $action;
-		print_r($object);
-
-		if (in_array('somecontext', explode(':', $parameters['context'])))
+		return 0;
+	}
+	
+	/**
+	 * Overloading the doActions function : replacing the parent's function with the one below
+	 *
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          &$action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	function formCreateProductOptions($parameters, &$object, &$action, $hookmanager)
+	{
+		global $conf,$showpricetoadd;
+		
+		if (empty($showpricetoadd))
 		{
-		  // do something only for the context 'somecontext'
+			if (
+			 (!empty($conf->global->SHOWPRICETOADD_PROPAL) && ( $parameters['currentcontext'] == 'propalcard' || in_array('propalcard', explode(':', $parameters['context'])) )) 
+			 || (!empty($conf->global->SHOWPRICETOADD_ORDER) && ( $parameters['currentcontext'] == 'ordercard' || in_array('ordercard', explode(':', $parameters['context'])) ))
+			 || (!empty($conf->global->SHOWPRICETOADD_INVOICE) && ( $parameters['currentcontext'] == 'invoicecard' || in_array('invoicecard', explode(':', $parameters['context'])) ))
+			)
+			{
+				//echo '<script>alert("TOTO");</script>';
+				$html = $this->_getScript();
+				
+				echo $html;
+			}	
 		}
+		
+		$showpricetoadd = 1;
+		
+		return 0;
+	}
 
-		if (! $error)
-		{
-			$this->results = array('myreturn' => $myvalue);
-			$this->resprints = 'A text to show';
-			return 0; // or return 1 to replace standard code
-		}
-		else
-		{
-			$this->errors[] = 'Error message';
-			return -1;
-		}
+	private function _getScript()
+	{
+		global $langs;
+		
+		$html = '<script type="text/javascript">
+						var spta_ajax_in_progress = 0;
+					
+						$(function() {
+							if ($("#showpricetoadd").length == 0) {
+								spta_constructHtml();
+							}
+						});
+						
+						function spta_constructHtml() {
+							var td = $("#idprod").closest("td");
+							var td_titre = td.closest("tr").prev("tr.liste_titre").children("td:first");
+							
+							td.attr("colspan", td.attr("colspan") - 1);
+							td_titre.attr("colspan", td_titre.attr("colspan") - 1);
+							
+							td.after($("<td align=\'right\' id=\'td_showpricetoadd\'><input name=\'showpricetoadd\' id=\'showpricetoadd\' size=\'5\' /></td>"))
+							td_titre.after($("<td align=\'right\' id=\'td_titre_showpricetoadd\'>'.$langs->transnoentities('PriceUHT').'</td>"));
+							
+							spta_bindEvent();
+						}
+			
+						function spta_bindEvent() {
+							$("#idprod").change(function(event) {
+								spta_setPriceInInput(this);
+							});
+						}
+						
+						function spta_setPriceInInput(input) {
+							
+							console.log("ENTREE", spta_ajax_in_progress);
+							
+							if (spta_ajax_in_progress == 0)
+							{
+								spta_ajax_in_progress++;
+								var fk_product = $(input).val();
+							
+								$.get("'.dol_buildpath('/showpricetoadd/script/interface.php', 1).'", {json:1, get:"priceProduct", fk_product:fk_product}, function(price) {
+										
+									$("#showpricetoadd").val(price);
+									
+									console.log(price);
+									
+									spta_ajax_in_progress--;
+									console.log("SORTIE", spta_ajax_in_progress);
+									
+								}, "json");
+								
+							}
+							
+						}
+						
+					</script>
+				';
+				
+			return $html;
 	}
 }
