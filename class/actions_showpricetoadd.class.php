@@ -99,36 +99,15 @@ class Actionsshowpricetoadd
 
 	private function _getScript()
 	{
-		global $langs;
-		
-		
 		$html = '<script type="text/javascript">
 						var spta_ajax_in_progress = 0;
 					
 						$(function() {
-							if ($("#showpricetoadd").length == 0) {
-								spta_constructHtml();
-							}
-						});
-						
-						function spta_constructHtml() {
-							var td = $("#idprod").closest("td");
-							var td_titre = td.closest("tr").prev("tr.liste_titre").children("td:first");
-							
-							if (typeof td.attr("colspan") != "undefined") td.attr("colspan", td.attr("colspan") - 1);
-							if (typeof td_titre.attr("colspan") != "undefined") td_titre.attr("colspan", td_titre.attr("colspan") - 1);
-							
-							td.after($("<td align=\'right\' id=\'td_showpricetoadd\' class=\'el_showpricetoadd\'><input name=\'showpricetoadd\' id=\'showpricetoadd\' size=\'5\' /></td>"))
-							td_titre.after($("<td align=\'right\' id=\'td_titre_showpricetoadd\' class=\'el_showpricetoadd\'>'.$langs->transnoentities('PriceUHT').'</td>"));
-							
-							spta_bindEvent();
-						}
-			
-						function spta_bindEvent() {
-							$("#idprod").change(function(event) {
+							$("#idprod").change(function() {
+								$("#price_ht").show();
 								spta_setPriceInInput(this);
 							});
-						}
+						});
 						
 						function spta_setPriceInInput(input) {
 							
@@ -139,7 +118,7 @@ class Actionsshowpricetoadd
 							
 								$.get("'.dol_buildpath('/showpricetoadd/script/interface.php', 1).'", {json:1, get:"priceProduct", fk_product:fk_product}, function(price) {
 									
-									$("#showpricetoadd").val(price);
+									$("#price_ht").val(price);
 									spta_ajax_in_progress--;
 									
 								}, "json");
@@ -147,32 +126,7 @@ class Actionsshowpricetoadd
 							}
 							
 						}
-				';
-				
-			if ((float) DOL_VERSION >= 3.6)
-			{
-				$html .= '
-					$(function() {
-						 $(".el_showpricetoadd").hide(); 
-					});
-					
-					$("#prod_entry_mode_free").click(function(event) {
-						$(".el_showpricetoadd").hide();
-					});
-					$("#select_type").change(function(event) {
-						$(".el_showpricetoadd").hide();
-					});
-					
-					$("#prod_entry_mode_predef").change(function(event) {
-						$(".el_showpricetoadd").show();
-					});
-					$("#idprod").change(function(event) {
-						$(".el_showpricetoadd").show();
-					});
-				';
-			}
-				
-			$html .= '</script>';
+				</script>';
 				
 			return $html;
 	}
