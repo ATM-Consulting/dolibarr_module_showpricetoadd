@@ -104,8 +104,12 @@ class Actionsshowpricetoadd
 					
 						$(function() {
 							$("#idprod").change(function() {
-								$("#price_ht").show();
-								spta_setPriceInInput(this);
+									var self = this;
+									setTimeout(function() {
+											$("#price_ht").show();
+											$("#title_up_ht").show();
+											spta_setPriceInInput(self);
+									}, 1);
 							});
 						});
 						
